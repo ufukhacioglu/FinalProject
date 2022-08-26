@@ -1,4 +1,5 @@
 ﻿using Business.Abstract;
+using Business.CCS;
 using Business.Constants;
 using Business.ValidationRules.FluentValidation;
 using Core.Aspects.Autofac.Validation;
@@ -20,6 +21,7 @@ namespace Business.Concrete
     {
         IProductDal _productDal;
 
+
         public ProductManager(IProductDal productDal)
         {
             _productDal = productDal;
@@ -28,27 +30,32 @@ namespace Business.Concrete
         [ValidationAspect(typeof(ProductValidator))]
         public IResult Add(Product product)
         {
-            //business codes
-            
+
+            var result = _productDal.GetAll(p => p.CategoryId == product.CategoryId).Count;
+            if (result >= 10)
+            {
+                return new ErrorResult(Messages.ProductCountOfCategoryError);
+            }
+            // Business Codes
+
             _productDal.Add(product);
 
-            
-            return new Result(true,Messages.ProductAdded);
+            return new SuccessResult(Messages.ProductAdded);
         }
 
         public IDataResult<List<Product>> GetAll()
         {
-            //if (DateTime.Now.Hour == 17)
-            //{
-            //    return new ErrorDataResult<List<Product>>(Messages.MaintenanceTime);
-            //}
+            if (DateTime.Now.Hour == 00)
+            {
+                return new ErrorDataResult<List<Product>>(Messages.MaintenanceTime);
+            }
 
-            return new SuccessDataResult<List<Product>>(_productDal.GetAll(),Messages.ProductsListed);
+            return new SuccessDataResult<List<Product>>(_productDal.GetAll(), Messages.ProductsListed);
         }
 
         public IDataResult<List<Product>> GetAllByCategoryId(int id)
         {
-            return new SuccessDataResult<List<Product>>(_productDal.GetAll(p=>p.CategoryId == id));
+            return new SuccessDataResult<List<Product>>(_productDal.GetAll(p => p.CategoryId == id));
         }
 
         public IDataResult<Product> GetById(int productId)

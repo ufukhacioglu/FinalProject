@@ -12,7 +12,7 @@ namespace DataAccess.Concrete.EntityFramework
     {
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlServer(@"Server=DESKTOP-7CAINP6;Database=Northwind;Trusted_Connection=true") ;
+            optionsBuilder.UseSqlServer(@"Server=UFUK;Database=Northwind;Trusted_Connection=true") ;
         }
 
         public DbSet<Product> Products { get; set; }
